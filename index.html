@@ -1,6 +1,83 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Product Price Check</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width:600px;
+    margin:auto;
+    padding:20px;
+    text-align:center;
+}
+
+img{
+    max-width:300px;
+    width:100%;
+}
+
+.price{
+    font-size:48px;
+    font-weight:bold;
+    color:green;
+    margin-top:20px;
+}
+
+.name{
+    font-size:28px;
+    margin-bottom:20px;
+}
+</style>
+
+</head>
 <body>
-<h1>Supermarket Price Checker</h1>
+
+<div id="result">Loading...</div>
+
+<script>
+
+const csvUrl =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vQKBUFk1THtImH4DMiDndK4mGnCx4NNDRv6W0gm_zOgDvJDWGy7u3k9Lj9PVbJSPTuDb4bWKndCJHfc/pub?gid=0&single=true&output=csv';
+
+const sku =
+new URLSearchParams(window.location.search).get('sku');
+
+fetch(csvUrl)
+.then(response => response.text())
+.then(csv => {
+
+    const rows = csv.trim().split('\n');
+
+    for(let i=1;i<rows.length;i++){
+
+        const cols = rows[i].split(',');
+
+        const rowSku = cols[0];
+
+        if(rowSku === sku){
+
+            document.getElementById('result').innerHTML = `
+                <div class="name">${cols[1]}</div>
+
+                <img src="${cols[3]}" alt="">
+
+                <div class="price">
+                    GYD ${cols[2]}
+                </div>
+            `;
+
+            return;
+        }
+    }
+
+    document.getElementById('result').innerHTML =
+        '<h2>Product Not Found</h2>';
+
+});
+
+</script>
+
 </body>
 </html>
